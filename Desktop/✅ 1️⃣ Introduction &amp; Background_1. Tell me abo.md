@@ -1,9 +1,8 @@
-<img src="https://r2cdn.perplexity.ai/pplx-full-logo-primary-dark%402x.png" style="height:64px;margin-right:32px"/>
 
 # ✅ 1️⃣ Introduction \& Background
 
 1. Tell me about yourself.
-I am Manish Kumar, currently pursuing B.Tech in Information Technology with a CGPA of 7.99. My core strength lies in backend development using Java and Spring Boot.
+I am Manish Kumar, currently pursuing B.Tech in Information Technology with a CGPA of 8.06. My core strength lies in backend development using Java and Spring Boot.
 I have built scalable backend applications like an IRCTC-inspired Railway Reservation System where I implemented JWT authentication, role-based access control, and handled concurrent ticket booking scenarios to prevent overbooking.
 I have a strong foundation in Data Structures, OOP, and database design. I enjoy solving real-world backend problems and designing clean, maintainable architectures. I am currently looking for an Associate System Engineer role where I can contribute to enterprise-level applications and continue learning modern technologies.
 2. Walk me through your resume.
