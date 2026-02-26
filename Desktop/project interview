@@ -1,0 +1,655 @@
+# 🚆 IRCTC Railway Reservation System – Complete Interview Guide
+
+> Project Reference: IRCTC Railway Reservation System (Resume Project) :contentReference[oaicite:0]{index=0}  
+> Tech Stack: Java, Spring Boot, MySQL, JWT, Hibernate, Redis, React, Docker  
+> Architecture: Layered (Controller → Service → Repository)
+
+---
+
+# 1️⃣ Basic Project Understanding
+
+## Explain your IRCTC Railway Reservation System
+
+It is a scalable backend railway reservation system inspired by real IRCTC workflows.  
+Users can register/login, search trains, check seat availability, book tickets, simulate payments, and cancel bookings.
+
+The system ensures:
+- Secure authentication using JWT
+- Concurrency-safe booking
+- Normalized database schema
+- Clean layered architecture
+
+---
+
+## What problem does your project solve?
+
+- Prevents overbooking using transactional locking  
+- Ensures secure authentication  
+- Maintains data integrity  
+- Handles concurrent booking requests  
+
+---
+
+## Why did you choose this project?
+
+- Real-world high-concurrency use case  
+- Strong system design relevance  
+- Involves transactions, locking, security, and optimization  
+- Frequently asked in product-based interviews  
+
+---
+
+## What was your exact role?
+
+- Designed database schema  
+- Implemented REST APIs  
+- Integrated JWT authentication  
+- Handled concurrency using transactions  
+- Structured layered architecture  
+- Implemented Redis caching  
+
+---
+
+## Is it production-ready?
+
+It follows production-level architecture but lacks:
+- Monitoring & logging tools  
+- Rate limiting  
+- Distributed locking  
+- Load balancing  
+
+---
+
+## How many users can it handle?
+
+- Single instance: ~2K–5K concurrent users  
+- Horizontally scalable with load balancer  
+
+---
+
+## Most challenging part?
+
+Handling concurrent seat booking and preventing race conditions.
+
+---
+
+## What should be visible on GitHub?
+
+- Clean folder structure  
+- DTO usage  
+- Controller, Service, Repository separation  
+- Security configuration  
+- Proper README documentation  
+
+---
+
+## What makes your project different?
+
+- Concurrency handling  
+- Clean architecture  
+- Redis integration  
+- JWT role-based security  
+- Optimized schema design  
+
+---
+
+## Improvements if given more time
+
+- Add payment gateway  
+- Add distributed locking  
+- Add monitoring (Prometheus/Grafana)  
+- Convert to microservices  
+
+---
+
+# 2️⃣ Architecture
+
+## Complete Architecture
+
+Frontend (React)  
+⬇  
+Controller Layer  
+⬇  
+Service Layer (Business Logic)  
+⬇  
+Repository Layer (JPA/Hibernate)  
+⬇  
+MySQL Database  
+
+---
+
+## Why layered architecture?
+
+- Separation of concerns  
+- Better maintainability  
+- Easy testing  
+- Scalable design  
+
+---
+
+## Controller → Service → Repository Pattern
+
+- Controller: Handles HTTP requests  
+- Service: Contains business logic  
+- Repository: Handles database operations  
+
+---
+
+## Why not monolithic logic in one class?
+
+- Difficult to maintain  
+- Hard to test  
+- Violates single responsibility principle  
+
+---
+
+## Request Flow
+
+1. Client sends request  
+2. JWT validated  
+3. Controller receives request  
+4. Service executes logic  
+5. Repository interacts with DB  
+6. Response returned  
+
+---
+
+## Where does validation happen?
+
+- Request validation: Controller (DTO + annotations)  
+- Business validation: Service layer  
+
+---
+
+## Why Spring Boot?
+
+- Rapid development  
+- Embedded server  
+- Easy security integration  
+- Strong ecosystem support  
+
+---
+
+## Why not Node.js or Django?
+
+Spring Boot provides:
+- Strong transaction management  
+- Better enterprise support  
+- Strong type safety with Java  
+
+---
+
+# 3️⃣ Database & Schema
+
+## Schema Overview
+
+Main tables:
+- User  
+- Train  
+- Seat  
+- Booking  
+- Payment  
+
+---
+
+## Why normalize tables?
+
+- Avoid redundancy  
+- Maintain integrity  
+- Reduce update anomalies  
+
+---
+
+## Relationships Used
+
+- OneToMany: Train → Seats  
+- ManyToOne: Booking → User  
+- OneToOne: Booking → Payment  
+
+---
+
+## Why MySQL?
+
+- Reliable  
+- ACID compliant  
+- Widely supported  
+
+---
+
+## Why AWS RDS?
+
+- Managed service  
+- Automated backups  
+- High availability  
+
+---
+
+## How improved query efficiency by 25%?
+
+- Added indexing  
+- Reduced unnecessary joins  
+- Optimized Hibernate fetch strategy  
+
+---
+
+## Indexes Added
+
+- Train ID  
+- User ID  
+- Booking ID  
+- Composite index on (TrainId + Date)  
+
+---
+
+## Prevent duplicate bookings
+
+- Unique constraint on (Seat + Train + Date)  
+- Transactional locking  
+
+---
+
+## If DB connection fails?
+
+- HikariCP handles pooling  
+- Exception thrown  
+- Logged properly  
+
+---
+
+# 4️⃣ Concurrency & Seat Booking
+
+## How prevented race condition?
+
+- Used @Transactional  
+- Row-level locking  
+- Proper isolation level  
+
+---
+
+## If 2 users book last seat?
+
+- First transaction locks seat  
+- Second transaction waits or fails  
+
+---
+
+## Optimistic or Pessimistic locking?
+
+Used pessimistic locking for seat updates.
+
+---
+
+## Isolation level?
+
+READ_COMMITTED (can upgrade to SERIALIZABLE if required)
+
+---
+
+## Lost update problem?
+
+When two transactions update same record and one overwrites the other.
+
+---
+
+## ACID properties applied
+
+- Atomicity: Booking complete or rollback  
+- Consistency: Valid seat state  
+- Isolation: No dirty reads  
+- Durability: Persist after commit  
+
+---
+
+## Booking fails after payment?
+
+Use:
+- Transaction rollback  
+- Compensation logic  
+- Idempotent API  
+
+---
+
+# 5️⃣ Redis Caching
+
+## Why Redis?
+
+- Faster reads  
+- Reduce DB load  
+- Improve performance (~35%)  
+
+---
+
+## Cached Data
+
+- Train search results  
+- Seat availability  
+
+---
+
+## Cache invalidation strategy
+
+- Clear cache after booking  
+- TTL for automatic expiration  
+
+---
+
+## If Redis goes down?
+
+- System falls back to DB  
+- No data loss  
+
+---
+
+## Write-through vs Write-back
+
+Used write-through for consistency.
+
+---
+
+## Why not HashMap?
+
+HashMap is local memory. Redis supports distributed caching.
+
+---
+
+# 6️⃣ Security (JWT)
+
+## How JWT works?
+
+1. Login  
+2. Server generates token  
+3. Client stores token  
+4. Token sent in each request  
+5. Server validates signature  
+
+---
+
+## JWT contains
+
+- User ID  
+- Role  
+- Expiry time  
+
+---
+
+## Where stored on frontend?
+
+LocalStorage (can improve using HttpOnly cookies)
+
+---
+
+## Role-based access
+
+Used Spring Security with role-based annotations.
+
+---
+
+## Stateless authentication?
+
+Server does not store session data.
+
+---
+
+## Session vs JWT
+
+Session:
+- Server stores session  
+
+JWT:
+- Stateless  
+- Token-based  
+
+---
+
+# 7️⃣ API & REST Design
+
+## Main Endpoints
+
+- POST /auth/register  
+- POST /auth/login  
+- GET /trains  
+- GET /trains/{id}  
+- POST /booking  
+- GET /booking/{id}  
+- DELETE /booking/{id}  
+
+---
+
+## PUT vs PATCH
+
+PUT → Full update  
+PATCH → Partial update  
+
+---
+
+## Global exception handling
+
+Used @ControllerAdvice
+
+---
+
+## Why DTO?
+
+- Hide entity  
+- Prevent overexposure  
+- Improve security  
+
+---
+
+## HTTP status codes
+
+- 200 OK  
+- 201 Created  
+- 400 Bad Request  
+- 401 Unauthorized  
+- 404 Not Found  
+- 500 Internal Server Error  
+
+---
+
+## API Testing
+
+- Postman  
+- Manual testing  
+- Integration testing  
+
+---
+
+# 8️⃣ Deployment & DevOps
+
+## Backend deployment
+
+- Packaged as JAR  
+- Dockerized  
+- Deployed on cloud server  
+
+---
+
+## What is inside Dockerfile?
+
+- OpenJDK base image  
+- Copy JAR  
+- Expose port  
+- ENTRYPOINT  
+
+---
+
+## What is containerization?
+
+Packaging application with dependencies for consistent execution.
+
+---
+
+## Frontend deployment
+
+Deployed on Vercel.
+
+---
+
+## Cold start?
+
+Initial startup delay while application initializes.
+
+---
+
+## Horizontal scaling?
+
+- Multiple instances  
+- Load balancer  
+- Shared database  
+
+---
+
+# 9️⃣ Performance & Optimization
+
+## Bottleneck
+
+Seat availability query.
+
+---
+
+## Tools used
+
+- Postman  
+- Logs  
+- Query analysis  
+
+---
+
+## HikariCP
+
+High-performance JDBC connection pool.
+
+---
+
+## Lazy vs Eager
+
+Lazy → Load when required  
+Eager → Load immediately  
+
+---
+
+## N+1 Query Problem
+
+Multiple queries due to improper fetch strategy.  
+Solved using fetch join.
+
+---
+
+# 🔟 Production-Level Thinking
+
+## Microservices design
+
+Split into:
+- User Service  
+- Train Service  
+- Booking Service  
+- Payment Service  
+
+---
+
+## Distributed locking
+
+- Redis-based lock  
+- Zookeeper  
+
+---
+
+## Add Kafka
+
+For:
+- Async payment processing  
+- Booking events  
+
+---
+
+## Audit logging
+
+Use centralized logging service.
+
+---
+
+## Rate limiting
+
+Redis + filter or API gateway.
+
+---
+
+## Circuit breaker
+
+Use Resilience4j.
+
+---
+
+## Secure secrets
+
+- Environment variables  
+- Secret manager  
+
+---
+
+# 🔥 Deep Design (1M Concurrent Users)
+
+## System design approach
+
+- Load balancer  
+- Multiple app instances  
+- Database sharding  
+- Redis cluster  
+- CDN  
+
+---
+
+## CAP theorem
+
+Prefer CP (Consistency + Partition tolerance).
+
+---
+
+## Prevent double booking in distributed system
+
+- Distributed lock  
+- Unique DB constraints  
+- Idempotency key  
+
+---
+
+## Database sharding
+
+Shard by Train ID or region.
+
+---
+
+## Idempotency
+
+Use unique request ID in booking API.
+
+---
+
+## Edge cases
+
+- Payment success but booking fails  
+- Duplicate API request  
+- Server crash after payment  
+- Seat already booked  
+
+---
+
+## Waiting list logic
+
+- Maintain queue  
+- Auto-confirm when seat cancels  
+- Update seat status transactionally  
+
+---
+
+# ✅ Conclusion
+
+This project demonstrates:
+
+- Backend architecture understanding  
+- Database design  
+- Concurrency control  
+- Security implementation  
+- Performance optimization  
+- Production-level thinking  
